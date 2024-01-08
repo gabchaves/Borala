@@ -53,16 +53,32 @@ def main():
         st.table(filtered_df)
 
     with aba2:
+        # Opções predefinidas para o gráfico
+        grafico_options = {
+            'Gráfico de Dispersão': 'scatter_chart',
+            'Gráfico de Barras': 'bar_chart',
+            'Gráfico de Linhas': 'line_chart'
+        }
+
+        # Selecione a opção para o gráfico
+        selected_grafico = st.selectbox('Selecione o tipo de gráfico:', list(grafico_options.keys()))
+
         # Selecione as colunas para o gráfico
         selected_columns = st.multiselect('Selecione as colunas para o gráfico:', data.columns)
 
         # Verifique se foram selecionadas pelo menos duas colunas
         if len(selected_columns) >= 2:
-            # Exiba o gráfico de dispersão diretamente no Streamlit
-            st.subheader('Gráfico de Dispersão')
-            st.scatter_chart(data[selected_columns])
+            # Exiba o gráfico escolhido
+            st.subheader(f'{selected_grafico}')
+            # Use a função apropriada do Streamlit com base na escolha do usuário
+            if grafico_options[selected_grafico] == 'scatter_chart':
+                st.scatter_chart(data[selected_columns])
+            elif grafico_options[selected_grafico] == 'bar_chart':
+                st.bar_chart(data[selected_columns])
+            elif grafico_options[selected_grafico] == 'line_chart':
+                st.line_chart(data[selected_columns])
         else:
-            st.warning('Selecione pelo menos duas colunas para criar o gráfico de dispersão.')
+            st.warning('Selecione pelo menos duas colunas para criar o gráfico.')
 
     # Save the modified data to a CSV file
     filtered_df.to_csv('sales_data_filtered.csv', index=False)
