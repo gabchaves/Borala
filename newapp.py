@@ -11,11 +11,7 @@ def set_page_config():
     )
 
 def load_data():
-    # Substitua aqui com o link do seu arquivo CSV
-    csv_file = 'https://gist.githubusercontent.com/JakeKwon/97a664627c794219c246688376811597/raw/c046b0010b248966b64334397919963376296b3d/sample.csv'
-    data = pd.read_csv(csv_file)
-
-    return data
+    return pd.read_csv('supermarkt_sales.csv')  # Altere o nome do arquivo para o seu arquivo CSV
 
 def filter_data(data, partner_filter, month_filter):
     if 'All' in month_filter:
@@ -52,11 +48,12 @@ def main():
     month_options = ['All'] + list(data['Mês'].unique())
     month_filter = st.sidebar.multiselect('Selecione o Mês:', month_options)
 
-    # Display the filtered data
+    # Display the filtered data in the first tab
     filtered_df = filter_data(data, partner_filter, month_filter)
-    display_filtered_data(filtered_df)
+    with st.expander("Dados Filtrados"):
+        display_filtered_data(filtered_df)
 
-    # Create and render the charts
+    # Create and render the charts in the second tab
     with st.expander("Gráficos"):
         st.subheader("Selecione o tipo de gráfico:")
         chart_options = {
@@ -72,7 +69,7 @@ def main():
         else:
             st.warning("Selecione uma combinação válida de colunas para gerar o gráfico.")
 
-    # Save the modified data to a CSV file
+    # Salvar os dados modificados em um arquivo CSV
     filtered_df.to_csv('sales_data_filtered.csv', index=False)
 
 if __name__ == "__main__":
