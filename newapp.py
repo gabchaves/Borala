@@ -39,9 +39,10 @@ def main():
 
         # Sidebar filters
         partner_filter = st.sidebar.multiselect('Selecione o Parceiro:', data['Parceiro'].unique())
+        month_text_filter = st.sidebar.selectbox('Selecione o Mês (texto):', data['Mês (text)'].unique())
 
         # Filtering the dataframe
-        filtered_df = data[data['Parceiro'].isin(partner_filter)]
+        filtered_df = data[(data['Parceiro'].isin(partner_filter)) & (data['Mês (text)'] == month_text_filter)]
 
         # Display the filtered dataframe with a larger table using st.table
         st.table(filtered_df)
