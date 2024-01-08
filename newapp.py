@@ -2,9 +2,8 @@ import streamlit as st
 import pandas as pd
 
 # Load the data
-@st.cache_data
 def load_data():
-    return pd.read_excel('supermarkt_sales.xlsx', sheet_name='Sales')
+    return pd.read_csv('supermarkt_sales.csv')  # Altere o nome do arquivo para o seu arquivo CSV
 
 def main():
     # Load the data
@@ -54,21 +53,28 @@ def main():
         st.table(filtered_df)
 
     with aba2:
-        # Selecione a combinação desejada
-        combination_options = {
-            'Vendas por Mês': ['Mês', 'Vendas'],
-            'Parceiro de Vendas': ['Parceiro', 'Vendas'],
-            'Qtd. de Vendas por Parceiro': ['Parceiro', 'Qtd. Vendas']
+        # Opções predefinidas para o gráfico
+        grafico_options = {
+            'Vendas por Mês': {'chart_type': 'line_chart', 'columns': ['Mês', 'Vendas']},
+            'Parceiro de Vendas': {'chart_type': 'bar_chart', 'columns': ['Parceiro', 'Vendas']},
+            'Quantidade de Vendas por Parceiro': {'chart_type': 'bar_chart', 'columns': ['Parceiro', 'Quantidade']}
         }
-        
-        selected_combination = st.selectbox('Selecione a combinação para o gráfico:', list(combination_options.keys()))
 
-        # Exiba o gráfico de linha com base na combinação selecionada
-        st.subheader('Gráfico de Linha')
-        st.line_chart(data[combination_options[selected_combination]])
+        # Selecione a opção para o gráfico
+        selected_grafico = st.selectbox('Selecione o tipo de gráfico:', list(grafico_options.keys()))
+
+        # Obtenha as configurações do gráfico selecionado
+        selected_chart_settings = grafico_options[selected_grafico]
+
+        # Exiba o gráfico com base nas configurações
+        st.subheader(f'{selected_grafico}')
+        if selected_chart_settings['chart_type'] == 'line_chart':
+            st.line_chart(filtered_df[selected_chart_settings['columns']])
+        elif selected_chart_settings['chart_type'] == 'bar_chart':
+            st.bar_chart(filtered_df[selected_chart_settings['columns']])
 
     # Save the modified data to a CSV file
-    data.to_csv('sales_data.csv', index=False)
+    filtered_df.to_csv('sales_data_filtered.csv', index=False)
 
 if __name__ == '__main__':
     main()
