@@ -2,35 +2,21 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 
-# Load the data
-def load_data():
-    return pd.read_csv('supermarkt_sales.csv') # Alter the filename to your CSV file
-
-# Set the page configuration
 def set_page_config():
-    st.markdown(
-        f"""
-        <style>
-            .reportview-container .main .block-container {{
-                max-width: 1200px;
-                padding-top: 2rem;
-                padding-right: 2rem;
-                padding-left: 2rem;
-                padding-bottom: 3rem;
-            }}
-            h1 {{
-                text-align: center;
-            }}
-        </style>
-        """,
-        unsafe_allow_html=True
+    st.set_page_config(
+        page_title="Dashboard Teste",
+        page_icon="📈",
+        layout="wide",
+        initial_sidebar_state="expanded",
     )
 
-# Render the data in a dataframe
-def render_data(data):
-    st.dataframe(data)
+def load_data():
+    # Substitua aqui com o link do seu arquivo CSV
+    csv_file = 'https://gist.githubusercontent.com/JakeKwon/97a664627c794219c246688376811597/raw/c046b0010b248966b64334397919963376296b3d/sample.csv'
+    data = pd.read_csv(csv_file)
 
-# Filter the data
+    return data
+
 def filter_data(data, partner_filter, month_filter):
     if 'All' in month_filter:
         month_filter = list(data['Mês'].unique())
@@ -39,11 +25,9 @@ def filter_data(data, partner_filter, month_filter):
 
     return filtered_df
 
-# Display the filtered data
 def display_filtered_data(filtered_df):
     st.table(filtered_df)
 
-# Create the charts
 def create_chart(filtered_df, chart_type, x_column, y_column):
     chart = alt.Chart(filtered_df).mark_bar().encode(
         x=x_column,
@@ -52,12 +36,10 @@ def create_chart(filtered_df, chart_type, x_column, y_column):
 
     return chart
 
-# Render the charts
 def render_charts(filtered_df, chart_type, x_column, y_column):
     chart = create_chart(filtered_df, chart_type, x_column, y_column)
     st.altair_chart(chart, use_container_width=True)
 
-# Main function
 def main():
     set_page_config()
     st.title('Dashboard teste')
@@ -92,3 +74,6 @@ def main():
 
     # Save the modified data to a CSV file
     filtered_df.to_csv('sales_data_filtered.csv', index=False)
+
+if __name__ == "__main__":
+    main()
