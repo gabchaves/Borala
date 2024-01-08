@@ -1,12 +1,10 @@
-
-
 import streamlit as st
 import pandas as pd
 
 # Load the data
 @st.cache_data
 def load_data():
-    return pd.read_excel('supermarkt_sales.xlsx', sheet_name='Sales')
+    return pd.read_csv('supermarkt_sales.csv')
 
 def main():
     # Load the data
@@ -40,7 +38,7 @@ def main():
         st.dataframe(data)
 
         # Sidebar filters
-        partner_filter = st.sidebar.multiselect('Selecione o Parceiro:', data['Parceiro'].unique())
+        partner_filter = st.sidebar.multiselect('Selecione o Parceiro:', data['Parceiros'].unique())
         month_options = ['All'] + list(data['Mês'].unique())
         month_filter = st.sidebar.multiselect('Selecione o Mês:', month_options)
 
@@ -50,7 +48,7 @@ def main():
             month_filter = list(data['Mês'].unique())
 
         # Filtering the dataframe
-        filtered_df = data[data['Parceiro'].isin(partner_filter) & data['Mês'].isin(month_filter)]
+        filtered_df = data[data['Parceiros'].isin(partner_filter) & data['Mês'].isin(month_filter)]
 
         # Display the filtered dataframe with a larger table using st.table
         st.table(filtered_df)
@@ -61,11 +59,11 @@ def main():
 
         # Verifique se foram selecionadas pelo menos duas colunas
         if len(selected_columns) >= 2:
-            # Exiba o gráfico de linha
-            st.subheader('Gráfico de Linha')
-            st.line_chart(data[selected_columns])
+            # Exiba o gráfico de dispersão
+            st.subheader('Gráfico de Dispersão')
+            st.scatter_chart(data[selected_columns])
         else:
-            st.warning('Selecione pelo menos duas colunas para criar o gráfico de linha.')
+            st.warning('Selecione pelo menos duas colunas para criar o gráfico de dispersão.')
 
     # Save the modified data to a CSV file
     data.to_csv('sales_data.csv', index=False)
