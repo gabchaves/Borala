@@ -55,9 +55,9 @@ def main():
     with aba2:
         # Opções predefinidas para o gráfico
         grafico_options = {
-            'Vendas por Mês': {'chart_type': 'line_chart', 'columns': ['Mês', 'Vendas']},
-            'Parceiro de Vendas': {'chart_type': 'bar_chart', 'columns': ['Parceiro', 'Vendas']},
-            'Quantidade de Vendas por Parceiro': {'chart_type': 'bar_chart', 'columns': ['Parceiro', 'Quantidade']}
+            'Vendas por Mês': {'chart_type': 'line_chart', 'columns': ['Mês', 'N° de vendas']},
+            'Parceiro de Vendas': {'chart_type': 'bar_chart', 'columns': ['Parceiro', 'N° de vendas']},
+            'Quantidade de Vendas por Parceiro': {'chart_type': 'bar_chart', 'columns': ['Parceiro', 'Qtd de acessos']}
         }
 
         # Selecione a opção para o gráfico
@@ -66,12 +66,16 @@ def main():
         # Obtenha as configurações do gráfico selecionado
         selected_chart_settings = grafico_options[selected_grafico]
 
-        # Exiba o gráfico com base nas configurações
-        st.subheader(f'{selected_grafico}')
-        if selected_chart_settings['chart_type'] == 'line_chart':
-            st.line_chart(filtered_df[selected_chart_settings['columns']])
-        elif selected_chart_settings['chart_type'] == 'bar_chart':
-            st.bar_chart(filtered_df[selected_chart_settings['columns']])
+        # Verifique se as colunas selecionadas existem no DataFrame resultante
+        if all(col in filtered_df.columns for col in selected_chart_settings['columns']):
+            # Exiba o gráfico com base nas configurações
+            st.subheader(f'{selected_grafico}')
+            if selected_chart_settings['chart_type'] == 'line_chart':
+                st.line_chart(filtered_df[selected_chart_settings['columns']])
+            elif selected_chart_settings['chart_type'] == 'bar_chart':
+                st.bar_chart(filtered_df[selected_chart_settings['columns']])
+        else:
+            st.warning("Selecione uma combinação válida de colunas para gerar o gráfico.")
 
     # Save the modified data to a CSV file
     filtered_df.to_csv('sales_data_filtered.csv', index=False)
