@@ -4,11 +4,18 @@ import pandas as pd
 # Load the data
 @st.cache_data
 def load_data():
-    return pd.read_csv('supermarkt_sales.csv')
+    try:
+        return pd.read_excel('supermarkt_sales.xlsx', sheet_name='Sales')
+    except Exception as e:
+        st.error(f"Erro ao carregar o arquivo Excel: {e}")
+        return pd.DataFrame()  # Retorna um DataFrame vazio em caso de erro
 
 def main():
     # Load the data
     data = load_data()
+
+    if data.empty:
+        return  # Encerra a execução se houver erro ao carregar os dados
 
     # Set the page configuration
     st.markdown(
@@ -61,7 +68,7 @@ def main():
         if len(selected_columns) >= 2:
             # Exiba o gráfico de dispersão
             st.subheader('Gráfico de Dispersão')
-            st.scatter_chart(data[selected_columns])
+            st.scatter_chart(filtered_df[selected_columns])
         else:
             st.warning('Selecione pelo menos duas colunas para criar o gráfico de dispersão.')
 
