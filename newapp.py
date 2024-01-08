@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import altair as alt
 
 # Load the data
 def load_data():
@@ -55,9 +56,7 @@ def main():
     with aba2:
         # Opções predefinidas para o gráfico
         grafico_options = {
-            'Vendas por Mês': {'chart_type': 'line_chart', 'columns': ['Mês', 'N° de vendas']},
-            'Parceiro de Vendas': {'chart_type': 'bar_chart', 'columns': ['Parceiro', 'N° de vendas']},
-            'Quantidade de Vendas por Parceiro': {'chart_type': 'bar_chart', 'columns': ['Parceiro', 'Qtd de acessos']}
+            'Vendas por Parceiro': {'chart_type': 'bar_chart', 'x_column': 'Parceiro', 'y_column': 'N° de vendas'}
         }
 
         # Selecione a opção para o gráfico
@@ -67,13 +66,15 @@ def main():
         selected_chart_settings = grafico_options[selected_grafico]
 
         # Verifique se as colunas selecionadas existem no DataFrame resultante
-        if all(col in filtered_df.columns for col in selected_chart_settings['columns']):
+        if selected_chart_settings['x_column'] in filtered_df.columns and selected_chart_settings['y_column'] in filtered_df.columns:
             # Exiba o gráfico com base nas configurações
             st.subheader(f'{selected_grafico}')
-            if selected_chart_settings['chart_type'] == 'line_chart':
-                st.line_chart(filtered_df[selected_chart_settings['columns']])
-            elif selected_chart_settings['chart_type'] == 'bar_chart':
-                st.bar_chart(filtered_df[selected_chart_settings['columns']])
+            chart = alt.Chart(filtered_df).mark_bar().encode(
+                x=selected_chart_settings['x_column'],
+                y=selected_chart_settings['y_column']
+            ).interactive()
+
+            st.altair_chart(chart, use_container_width=True)
         else:
             st.warning("Selecione uma combinação válida de colunas para gerar o gráfico.")
 
