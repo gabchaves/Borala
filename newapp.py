@@ -39,22 +39,46 @@ def main():
 
         # Sidebar filters
         partner_filter = st.sidebar.multiselect('Selecione o Parceiro:', data['Parceiro'].unique())
+        month_options = ['All'] + list(data['Mês'].unique())
+        month_filter = st.sidebar.multiselect('Selecione o Mês:', month_options)
+
+        # Check if 'All' is selected
+        if 'All' in month_filter:
+            # If 'All' is selected, remove other month filters
+            month_filter = list(data['Mês'].unique())
 
         # Filtering the dataframe
-        filtered_df = data[data['Parceiro'].isin(partner_filter)]
+        filtered_df = data[data['Parceiro'].isin(partner_filter) & data['Mês'].isin(month_filter)]
 
         # Display the filtered dataframe with a larger table using st.table
         st.table(filtered_df)
 
     with aba2:
-        # Gráfico de barras para vendas por parceiro
-        st.subheader('Vendas por Parceiro (Gráfico de Barras)')
-        chart = alt.Chart(filtered_df).mark_bar().encode(
-            x='Parceiro',
-            y='N° de vendas'
-        ).interactive()
+        # Opções predefinidas para o gráfico
+        grafico_options = {
+            'Vendas por Parceiro': {'chart_type': 'bar_chart', 'x_column': 'Parceiro', 'y_column': 'N° de vendas'},
+            'Vendas por Mês': {'chart_type': 'bar_chart', 'x_column': 'Mês', 'y_column': 'N° de vendas'},
+            'GMV por Parceiro': {'chart_type': 'bar_chart', 'x_column': 'Parceiro', 'y_column': 'GMV'}
+        }
 
-        st.altair_chart(chart, use_container_width=True)
+        # Selecione a opção para o gráfico
+        selected_grafico = st.selectbox('Selecione o tipo de gráfico:', list(grafico_options.keys()))
+
+        # Obtenha as configurações do gráfico selecionado
+        selected_chart_settings = grafico_options[selected_grafico]
+
+        # Verifique se as colunas selecionadas existem no DataFrame resultante
+        if selected_chart_settings['x_column'] in filtered_df.columns and selected_chart_settings['y_column'] in filtered_df.columns:
+            # Exiba o gráfico com base nas configurações
+            st.subheader(f'{selected_grafico}')
+            chart = alt.Chart(filtered_df).mark_bar().encode(
+                x=selected_chart_settings['x_column'],
+                y=selected_chart_settings['y_column']
+            ).interactive()
+
+            st.altair_chart(chart, use_container_width=True)
+        else:
+            st.warning("Selecione uma combinação válida de colunas para gerar o gráfico.")
 
     # Save the modified data to a CSV file
     filtered_df.to_csv('sales_data_filtered.csv', index=False)
