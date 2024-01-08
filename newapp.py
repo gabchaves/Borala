@@ -34,7 +34,18 @@ def main():
 
     with aba1:
         st.header('Base de dados')
-        st.dataframe(data)
+
+        # Filtros
+        st.sidebar.header('Filtros')
+        partner_filter = st.sidebar.multiselect('Selecione o Parceiro:', data['Parceiro'].unique())
+        month_filter = st.sidebar.multiselect('Selecione o Mês:', data['Mês'].unique())
+        gmv_range = st.sidebar.slider('Selecione Faixa de GMV:', float(data['GMV'].min()), float(data['GMV'].max()), (float(data['GMV'].min()), float(data['GMV'].max())))
+
+        # Aplicar filtros
+        filtered_df = data[data['Parceiro'].isin(partner_filter) & data['Mês'].isin(month_filter) & (data['GMV'] >= gmv_range[0]) & (data['GMV'] <= gmv_range[1])]
+
+        # Exibir dados filtrados
+        st.dataframe(filtered_df)
 
     with aba2:
         st.header('Gráficos')
@@ -50,11 +61,11 @@ def main():
         selected_grafico = st.selectbox('Selecione o tipo de gráfico:', list(grafico_options.keys()))
 
         # Crie o gráfico correspondente
-        create_bar_chart(data, grafico_options[selected_grafico]['x_column'],
+        create_bar_chart(filtered_df, grafico_options[selected_grafico]['x_column'],
                          grafico_options[selected_grafico]['y_column'], selected_grafico)
 
     # Salvar os dados filtrados em um arquivo CSV
-    data.to_csv('sales_data_filtered.csv', index=False)
+    filtered_df.to_csv('sales_data_filtered.csv', index=False)
 
 if __name__ == '__main__':
     main()
