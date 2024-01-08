@@ -54,29 +54,14 @@ def main():
         st.table(filtered_df)
 
     with aba2:
-        # Opções predefinidas para o gráfico
-        grafico_options = {
-            'Vendas por Parceiro': {'chart_type': 'bar_chart', 'x_column': 'Parceiro', 'y_column': 'N° de vendas'}
-        }
+        # Gráfico de barras para vendas por parceiro
+        st.subheader('Vendas por Parceiro (Gráfico de Barras)')
+        chart = alt.Chart(filtered_df).mark_bar().encode(
+            x='Parceiro',
+            y='N° de vendas'
+        ).interactive()
 
-        # Selecione a opção para o gráfico
-        selected_grafico = st.selectbox('Selecione o tipo de gráfico:', list(grafico_options.keys()))
-
-        # Obtenha as configurações do gráfico selecionado
-        selected_chart_settings = grafico_options[selected_grafico]
-
-        # Verifique se as colunas selecionadas existem no DataFrame resultante
-        if selected_chart_settings['x_column'] in filtered_df.columns and selected_chart_settings['y_column'] in filtered_df.columns:
-            # Exiba o gráfico com base nas configurações
-            st.subheader(f'{selected_grafico}')
-            chart = alt.Chart(filtered_df).mark_bar().encode(
-                x=selected_chart_settings['x_column'],
-                y=selected_chart_settings['y_column']
-            ).interactive()
-
-            st.altair_chart(chart, use_container_width=True)
-        else:
-            st.warning("Selecione uma combinação válida de colunas para gerar o gráfico.")
+        st.altair_chart(chart, use_container_width=True)
 
     # Save the modified data to a CSV file
     filtered_df.to_csv('sales_data_filtered.csv', index=False)
