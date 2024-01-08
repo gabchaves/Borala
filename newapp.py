@@ -55,30 +55,25 @@ def main():
     with aba2:
         # Opções predefinidas para o gráfico
         grafico_options = {
-            'Gráfico de Dispersão': 'scatter_chart',
-            'Gráfico de Barras': 'bar_chart',
-            'Gráfico de Linhas': 'line_chart'
+            'Gráfico de Dispersão': {'chart_type': 'scatter_chart', 'columns': ['Coluna1', 'Coluna2']},
+            'Gráfico de Barras': {'chart_type': 'bar_chart', 'columns': ['Coluna3', 'Coluna4']},
+            'Gráfico de Linhas': {'chart_type': 'line_chart', 'columns': ['Coluna5', 'Coluna6']}
         }
 
         # Selecione a opção para o gráfico
         selected_grafico = st.selectbox('Selecione o tipo de gráfico:', list(grafico_options.keys()))
 
-        # Selecione as colunas para o gráfico
-        selected_columns = st.multiselect('Selecione as colunas para o gráfico:', data.columns)
+        # Obtenha as configurações do gráfico selecionado
+        selected_chart_settings = grafico_options[selected_grafico]
 
-        # Verifique se foram selecionadas pelo menos duas colunas
-        if len(selected_columns) >= 2:
-            # Exiba o gráfico escolhido
-            st.subheader(f'{selected_grafico}')
-            # Use a função apropriada do Streamlit com base na escolha do usuário
-            if grafico_options[selected_grafico] == 'scatter_chart':
-                st.scatter_chart(data[selected_columns])
-            elif grafico_options[selected_grafico] == 'bar_chart':
-                st.bar_chart(data[selected_columns])
-            elif grafico_options[selected_grafico] == 'line_chart':
-                st.line_chart(data[selected_columns])
-        else:
-            st.warning('Selecione pelo menos duas colunas para criar o gráfico.')
+        # Exiba o gráfico com base nas configurações
+        st.subheader(f'{selected_grafico}')
+        if selected_chart_settings['chart_type'] == 'scatter_chart':
+            st.scatter_chart(data[selected_chart_settings['columns']])
+        elif selected_chart_settings['chart_type'] == 'bar_chart':
+            st.bar_chart(data[selected_chart_settings['columns']])
+        elif selected_chart_settings['chart_type'] == 'line_chart':
+            st.line_chart(data[selected_chart_settings['columns']])
 
     # Save the modified data to a CSV file
     filtered_df.to_csv('sales_data_filtered.csv', index=False)
