@@ -1,21 +1,15 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # Load the data
 @st.cache_data
 def load_data():
-    try:
-        return pd.read_excel('supermarkt_sales.xlsx', sheet_name='Sales')
-    except Exception as e:
-        st.error(f"Erro ao carregar o arquivo Excel: {e}")
-        return pd.DataFrame()  # Retorna um DataFrame vazio em caso de erro
+    return pd.read_csv('supermarkt_sales.csv')  # Altere o nome do arquivo para o seu arquivo CSV
 
 def main():
     # Load the data
     data = load_data()
-
-    if data.empty:
-        return  # Encerra a execução se houver erro ao carregar os dados
 
     # Set the page configuration
     st.markdown(
@@ -45,7 +39,7 @@ def main():
         st.dataframe(data)
 
         # Sidebar filters
-        partner_filter = st.sidebar.multiselect('Selecione o Parceiro:', data['Parceiros'].unique())
+        partner_filter = st.sidebar.multiselect('Selecione o Parceiro:', data['Parceiro'].unique())
         month_options = ['All'] + list(data['Mês'].unique())
         month_filter = st.sidebar.multiselect('Selecione o Mês:', month_options)
 
@@ -55,7 +49,7 @@ def main():
             month_filter = list(data['Mês'].unique())
 
         # Filtering the dataframe
-        filtered_df = data[data['Parceiros'].isin(partner_filter) & data['Mês'].isin(month_filter)]
+        filtered_df = data[data['Parceiro'].isin(partner_filter) & data['Mês'].isin(month_filter)]
 
         # Display the filtered dataframe with a larger table using st.table
         st.table(filtered_df)
@@ -68,7 +62,12 @@ def main():
         if len(selected_columns) >= 2:
             # Exiba o gráfico de dispersão
             st.subheader('Gráfico de Dispersão')
-            st.scatter_chart(filtered_df[selected_columns])
+            fig, ax = plt.subplots(figsize=(10, 6))
+            ax.scatter(data[selected_columns[0]], data[selected_columns[1]])
+            ax.set_title('Gráfico de Dispersão')
+            ax.set_xlabel(selected_columns[0])
+            ax.set_ylabel(selected_columns[1])
+            st.pyplot(fig)
         else:
             st.warning('Selecione pelo menos duas colunas para criar o gráfico de dispersão.')
 
