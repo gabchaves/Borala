@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 
 # Load the data
 @st.cache_data
@@ -60,16 +59,11 @@ def main():
 
         # Verifique se foram selecionadas pelo menos duas colunas
         if len(selected_columns) >= 2:
-            # Exiba o gráfico de dispersão
-            st.subheader('Gráfico de Dispersão')
-            fig, ax = plt.subplots(figsize=(10, 6))
-            ax.scatter(data[selected_columns[0]], data[selected_columns[1]])
-            ax.set_title('Gráfico de Dispersão')
-            ax.set_xlabel(selected_columns[0])
-            ax.set_ylabel(selected_columns[1])
-            st.pyplot(fig)
+            # Exiba o gráfico de linha
+            st.subheader('Gráfico de Linha')
+            st.line_chart(data[selected_columns])
         else:
-            st.warning('Selecione pelo menos duas colunas para criar o gráfico de dispersão.')
+            st.warning('Selecione pelo menos duas colunas para criar o gráfico de linha.')
 
     # Save the modified data to a CSV file
     data.to_csv('sales_data.csv', index=False)
