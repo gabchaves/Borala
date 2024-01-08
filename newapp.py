@@ -35,7 +35,7 @@ def main():
     with aba1:
         st.header('Base de dados')
 
-        # Filtros
+        # Filtros para base de dados
         st.sidebar.header('Filtros')
         partner_filter = st.sidebar.multiselect('Selecione o Parceiro:', data['Parceiro'].unique())
         month_filter = st.sidebar.multiselect('Selecione o Mês:', data['Mês'].unique())
