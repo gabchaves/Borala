@@ -72,7 +72,7 @@ def main():
             st.warning('Selecione pelo menos duas colunas para criar o gráfico de dispersão.')
 
     # Save the modified data to a CSV file
-    data.to_csv('sales_data.csv', index=False)
+    filtered_df.to_csv('sales_data_filtered.csv', index=False)
 
 if __name__ == '__main__':
     main()
